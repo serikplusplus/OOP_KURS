@@ -8,11 +8,6 @@
 
 using namespace std;
 
-ifstream avtoIn("e:\\avto.txt");
-ofstream avtoOut("e:\\avto.txt",ios::app);
-ifstream clientIn("e:\\client.txt");
-ofstream clientOut("e:\\client.txt", ios::app);
-
 
 // Структура полной базы
 struct avt
@@ -60,11 +55,15 @@ public:
 	//Начальная инициализация базы
 	int createAvto()
 	{
+		ifstream avtoIn("e:\\avto.txt");
+		if (!avtoIn.is_open()  )
+		{
+			cout << "Файл не найден";   return 1;
+		}
 
+		if (Count > 0)return 0;
 		while (!avtoIn.eof()) 
 		{
-			if (avtoIn)
-			{
 				avt *temp = new avt;
 				avtoIn >> temp->id >> temp->marka >> temp->model >> temp->status >> temp->color;
 				if (temp->id != "")
@@ -78,9 +77,9 @@ public:
 
 				}
 				else break;
-			}
-
+		
 		}
+		avtoIn.close();
 		if (Count == 0) return 1;
 		return 0;
 	} 
@@ -90,11 +89,13 @@ public:
 		if (Count != 0)
 		{
 			avt *temp = Head;
-			while (temp !=  0)
-			{
-				cout << temp->id << "\t" << temp->marka << "\t" << temp->model << "\t" << temp->status << "\t" << temp->color << "\t" << endl;
-				temp = temp->next;
-			}
+	
+				while (temp != 0)
+				{
+					cout << temp->id << "\t" << temp->marka << "\t" << temp->model << "\t" << temp->status << "\t" << temp->color << "\t" << endl;
+					temp = temp->next;
+				}
+
 		};
 	}
 	// Поиск по ИД (только во всей базе)
@@ -108,16 +109,33 @@ public:
 			cin >> id;
 			system("cls");
 			avt *temp = Head; 
+			CountSlot = 0;
 			while (temp != 0)
 			{
 					if (temp->id == id)
 					{
+						avtSlot *slot = new avtSlot;
+						slot->id = temp->id; slot->marka = temp->marka; slot->model = temp->model; slot->status = temp->status; slot->color = temp->color;
 						cout << temp->id << "\t" << temp->marka << "\t" << temp->model << "\t" << temp->status << "\t" << temp->color << "\t"  << endl;
 						temp = temp->next;
+						slot->next = 0;
+						slot->pred = 0;
+						if (CountSlot == 0)
+						{
+							HeadSlot = TailSlot = slot;
+						}
+						else {
+							TailSlot->next = slot;
+							slot->pred = TailSlot;
+							TailSlot = slot;
+						}
+						++CountSlot;
+						chec++;
 						break;
 					}
-					else temp = temp->next;
-			}					
+					else temp = temp->next;		
+			}	
+			if (chec == 0)cout << "Такой авто нет" << endl;
 		}
 	}
 
@@ -198,7 +216,7 @@ public:
 				}
 				else temp = temp->next;
 			}
-			if (chec == 0)cout << "Такой марки нет" << endl;
+			if (chec == 0)cout << "Такой машины нет" << endl;
 		}
 	}
 
@@ -449,6 +467,7 @@ public:
 	// Добавление авто в базу
 	void AddNewAvto()
 	{
+		ofstream avtoOut("e:\\avto.txt", ios::app);
 		avt *temp = new avt;
 		temp->next = 0;
 		cout << "Номер: " << endl;
@@ -465,11 +484,12 @@ public:
 		avtoOut << temp->status << "\t";
 		cout << "Цвет: " << endl;
 		cin >> temp->color;
-		avtoOut << temp->color << endl;
+		avtoOut << temp->color<<"\n";
 		temp->pred = Tail;
 		if (Tail != 0)Tail->next = temp;
 		if (Count == 0)Head = Tail = temp;
-		else { Tail = temp; Count++; }
+		Tail = temp; ++Count; 
+		avtoOut.close();
 	}  
 	int DelAvto()
 	{
@@ -523,6 +543,7 @@ public:
 			};
 		}
 		else cout << "Такого номера нет";
+		avtoDel.close();
 		return 0;
 	}
 
@@ -565,11 +586,10 @@ public:
 
 	int createClient()
 	{
-
+		ifstream clientIn("e:\\client.txt");
+		if (CountClient > 0)return 0;
 		while (!clientIn.eof())
 		{
-			if (clientIn)
-			{
 				Klient *client= new Klient;
 				clientIn >> client->name >> client->id >> client->marka >> client->model >> client->status >> client->color;
 				if (client->name != "")
@@ -583,9 +603,8 @@ public:
 
 				}
 				else break;
-			}
-
 		}
+		clientIn.close();
 		if (CountClient == 0) return 1;
 		return 0;
 	}
@@ -597,10 +616,37 @@ public:
 			Klient *temp = HeadClient;
 			while (temp != 0)
 			{
-				cout <<temp->name <<temp->id << "\t" << temp->marka << "\t" << temp->model << "\t" << temp->status << "\t" << temp->color << "\t" << endl;
+				cout <<temp->name<<"\t" <<temp->id << "\t" << temp->marka << "\t" << temp->model << "\t" << temp->status << "\t" << temp->color << "\t" << endl;
 				temp = temp->next;
 			}
-		};
+		}
+		else cout << "База клиентов пуста";
+	}
+
+
+	void searchClientId()
+	{
+		if (CountClient != 0)
+		{
+			string id;
+			int chec = 0;
+			cout << "Укажите ID" << endl;
+			cin >> id;
+			system("cls");
+			Klient *temp = HeadClient;
+			while (temp != 0)
+			{
+				if (temp->id == id)
+				{
+					cout <<temp->name<<"\t"<< temp->id << "\t" << temp->marka << "\t" << temp->model << "\t" << temp->status << "\t" << temp->color << "\t" << endl;
+					temp = temp->next;
+					chec++;
+					break;
+				}
+				else temp = temp->next;
+			}
+			if (chec == 0)cout << "Такого клиента в базе нет";
+		}
 	}
 
 
@@ -610,6 +656,7 @@ public:
 		int v =  setCount();
 		if (v != 0)
 		{
+			ofstream clientOut("e:\\client.txt", ios::app);
 			ofstream avtoDel("e:\\avto.txt");
 			string id;
 			cout << "Введите номер: ";
@@ -636,7 +683,7 @@ public:
 			client->pred = TailClient;
 			if (TailClient != 0)TailClient->next = client;
 			if (CountClient == 0)HeadClient = TailClient = client;
-			else { TailClient = client; CountClient++; }
+			 TailClient = client; CountClient++; 
 
 			clientOut << client->name <<"\t"<< client->id << "\t" << client->marka << "\t" << client->model << "\t" << client->status << "\t" << client->color  << endl;
 			// Доходим до элемента, 
@@ -670,6 +717,8 @@ public:
 				}
 			};
 			createCount();
+			avtoDel.close();
+			clientOut.close();
 		}		
 	}
 private:
@@ -693,25 +742,33 @@ int main()
 {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-
+	Prog prog;
 	int otv;
 	int stbase;
 	int clientbase;
-	Prog prog;
-	if (!avtoIn.is_open() || !avtoOut.is_open())
-	{
-		cout << "Файл не найден";   return 1;
-	}
 
 	while (true)
 	{
 		stbase = prog.createAvto();
 		clientbase = prog.createClient();
+
+
 		switch (stbase)
 		{
 		case 1:
 			cout << "База пуста" << endl;
 			Go1();
+			switch (clientbase)
+			{
+			case 1:
+				cout << "База клиентов пуста" << endl;
+				break;
+			case 0:
+				cout << "11\t Вывод базы клиентов" << endl;
+				break;
+			default:
+				break;
+			}
 			break;
 		case 0:
 			Go();
@@ -788,6 +845,14 @@ int main()
 			system("cls");
 			prog.By();
 			break;
+		case 11:
+			system("cls");
+			prog.WriteAllClient();
+			break;
+		case 12:
+			system("cls");
+			prog.searchClientId();
+			break;
 		case 0:
 			system("cls");
 			cout << "By";
@@ -800,8 +865,6 @@ int main()
 	} 
 	
 
-	avtoIn.close();
-	avtoOut.close();
 	
 }
 
@@ -818,6 +881,8 @@ void Go()
 		<< "8\t Вывести всю базу" << endl
 		<< "9\t Удалить машину с базы" << endl
 		<< "10\t Авто купили" << endl
+		<< "11\t Вывод базы клиентов" << endl
+		<< "12\t Поиск клиента по номеру" << endl
 		<< "0\t ВЫХОД" << endl;
 
 
