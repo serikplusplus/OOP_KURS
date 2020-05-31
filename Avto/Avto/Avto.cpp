@@ -1,6 +1,4 @@
-﻿
-
-#include "pch.h"
+﻿#include "pch.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -9,7 +7,7 @@
 using namespace std;
 
 
-// Структура полной базы
+// Структура полной базы авто
 struct avt
 {
 	string id;
@@ -19,7 +17,7 @@ struct avt
 	string color;
 	avt *next, *pred;
 }; 
-// Структура временного поиска
+// Структура временного поиска авто
 struct avtSlot
 {
 	string id;
@@ -27,9 +25,9 @@ struct avtSlot
 	string model;
 	string status;
 	string color;
-	avtSlot *next, *pred;
+	avtSlot *next;
 };  
-
+// Структура базы клиетов 
 struct Klient 
 {
 	string name;
@@ -38,7 +36,7 @@ struct Klient
 	string model;
 	string status;
 	string color;
-	Klient *next, *pred;
+	Klient *next;
 };
 
 
@@ -53,17 +51,18 @@ public:
 		CountSlot = 0;
 	}
 	//Начальная инициализация базы
-	int createAvto()
+	int CreateAvto()
 	{
-		ifstream avtoIn("e:\\avto.txt");
+		ifstream avtoIn("e:\\avto.txt");// открытие файла 
 		if (!avtoIn.is_open()  )
 		{
 			cout << "Файл не найден";   return 1;
 		}
 
-		if (Count > 0)return 0;
-		while (!avtoIn.eof()) 
+		if (Count > 0)return 0;// Если база не пуста не проводить инициализацию базы с файла 
+		while (!avtoIn.eof()) // пока не конец файла 
 		{
+			// построчно считывем и записываем данные с файла в структуру 
 				avt *temp = new avt;
 				avtoIn >> temp->id >> temp->marka >> temp->model >> temp->status >> temp->color;
 				if (temp->id != "")
@@ -80,7 +79,7 @@ public:
 		
 		}
 		avtoIn.close();
-		if (Count == 0) return 1;
+		if (Count == 0) return 1;// Предупреждает о пустоте файла 
 		return 0;
 	} 
 	// Вывод всей базы
@@ -99,37 +98,26 @@ public:
 		}
 	}
 	// Поиск по ИД (только во всей базе)
-	void searchId()
+	void SearchId()
 	{
 		if (Count != 0)
 		{
-			string id;
-			int chec = 0;
+			string id; // ID для поиска
+			int chec = 0;// флаг для обозначиния соотвецтвий
 			cout << "Укажите ID"<<endl;
 			cin >> id;
 			system("cls");
 			avt *temp = Head; 
 			CountSlot = 0;
-			while (temp != 0)
+			while (temp != 0)// пока не конец структуры 
 			{
 					if (temp->id == id)
 					{
-						avtSlot *slot = new avtSlot;
-						slot->id = temp->id; slot->marka = temp->marka; slot->model = temp->model; slot->status = temp->status; slot->color = temp->color;
+						// Вывод полей и запись их в стековую структуру поиска
+						
 						cout << temp->id << "\t" << temp->marka << "\t" << temp->model << "\t" << temp->status << "\t" << temp->color << "\t"  << endl;
 						temp = temp->next;
-						slot->next = 0;
-						slot->pred = 0;
-						if (CountSlot == 0)
-						{
-							HeadSlot = TailSlot = slot;
-						}
-						else {
-							TailSlot->next = slot;
-							slot->pred = TailSlot;
-							TailSlot = slot;
-						}
-						++CountSlot;
+
 						chec++;
 						break;
 					}
@@ -140,7 +128,7 @@ public:
 	}
 
 	// Поиск по марке (во всей базе)
-	void searchMarka()
+	void SearchMarka()
 	{
 		if (Count != 0)
 		{
@@ -161,14 +149,14 @@ public:
 					cout << temp->id << "\t" << temp->marka << "\t" << temp->model << "\t" << temp->status << "\t" << temp->color << "\t" << endl;
 					temp = temp->next;
 					slot->next = 0;
-					slot->pred = 0;
+					
 					if (CountSlot == 0)
 					{
 						HeadSlot = TailSlot = slot;
 					}
 					else {
 						TailSlot->next = slot;
-						slot->pred = TailSlot;
+						
 						TailSlot = slot;
 					}
 					++CountSlot;
@@ -181,7 +169,7 @@ public:
 		}
 	}
 	// Поиск по марке (в временной структуре поиска)
-	void searchMarka(int n)
+	void SearchMarka(int n)
 	{
 		if (CountSlot != 0)
 		{
@@ -201,14 +189,14 @@ public:
 					cout << slot->id << "\t" << slot->marka << "\t" << slot->model << "\t" << slot->status << "\t" << slot->color << "\t" << endl;
 					temp = temp->next;
 					slot->next = 0;
-					slot->pred = 0;
+					
 					if (CountSlot == 0)
 					{
 						HeadSlot = TailSlot = slot;
 					}
 					else {
 						TailSlot->next = slot;
-						slot->pred = TailSlot;
+						
 						TailSlot = slot;
 					}
 					++CountSlot;
@@ -221,7 +209,7 @@ public:
 	}
 
 	// Поиск по моделе (во всей базе)
-	void searchModel()
+	void SearchModel()
 	{
 		if (Count != 0)
 		{
@@ -242,14 +230,14 @@ public:
 					cout << temp->id << "\t" << temp->marka << "\t" << temp->model << "\t" << temp->status << "\t" << temp->color << "\t"  << endl;
 					temp = temp->next;
 					slot->next = 0;
-					slot->pred = 0;
+					
 					if (CountSlot == 0)
 					{
 						HeadSlot = TailSlot = slot;
 					}
 					else {
 						TailSlot->next = slot;
-						slot->pred = TailSlot;
+						
 						TailSlot = slot;
 					}
 					++CountSlot;
@@ -262,7 +250,7 @@ public:
 		}
 	}
 	// Поиск по моделе (в временной структуре поиска)
-	void searchModel(int n)
+	void SearchModel(int n)
 	{
 		if (CountSlot != 0)
 		{
@@ -282,14 +270,14 @@ public:
 					cout << slot->id << "\t" << slot->marka << "\t" << slot->model << "\t" << slot->status << "\t" << slot->color << "\t" << endl;
 					temp = temp->next;
 					slot->next = 0;
-					slot->pred = 0;
+					
 					if (CountSlot == 0)
 					{
 						HeadSlot = TailSlot = slot;
 					}
 					else {
 						TailSlot->next = slot;
-						slot->pred = TailSlot;
+						
 						TailSlot = slot;
 					}
 					++CountSlot;
@@ -303,7 +291,7 @@ public:
 
 
 	// Поиск по статусу (во всей базе)
-	void searchStatus()
+	void SearchStatus()
 	{
 		if (Count != 0)
 		{
@@ -323,14 +311,14 @@ public:
 					cout << temp->id << "\t" << temp->marka << "\t" << temp->model << "\t" << temp->status << "\t" << temp->color << "\t" << endl;
 					temp = temp->next;
 					slot->next = 0;
-					slot->pred = 0;
+					
 					if (CountSlot == 0)
 					{
 						HeadSlot = TailSlot = slot;
 					}
 					else {
 						TailSlot->next = slot;
-						slot->pred = TailSlot;
+						
 						TailSlot = slot;
 					}
 					++CountSlot;
@@ -342,7 +330,7 @@ public:
 		}
 	}
 	// Поиск по статусу (в временной структуре поиска)
-	void searchStatus(int n)
+	void SearchStatus(int n)
 	{
 		if (CountSlot != 0)
 		{
@@ -362,14 +350,14 @@ public:
 					cout << slot->id << "\t" << slot->marka << "\t" << slot->model << "\t" << slot->status << "\t" << slot->color << "\t"  << endl;
 					temp = temp->next;
 					slot->next = 0;
-					slot->pred = 0;
+					
 					if (CountSlot == 0)
 					{
 						HeadSlot = TailSlot = slot;
 					}
 					else {
 						TailSlot->next = slot;
-						slot->pred = TailSlot;
+						
 						TailSlot = slot;
 					}
 					++CountSlot;
@@ -384,7 +372,7 @@ public:
 
 
 	// Поиск по цвету (во всей базе)
-	void searchColor()
+	void SearchColor()
 	{
 		if (Count != 0)
 		{
@@ -405,14 +393,14 @@ public:
 					cout << temp->id << "\t" << temp->marka << "\t" << temp->model << "\t" << temp->status << "\t" << temp->color << "\t"  << endl;
 					temp = temp->next;
 					slot->next = 0;
-					slot->pred = 0;
+					
 					if (CountSlot == 0)
 					{
 						HeadSlot = TailSlot = slot;
 					}
 					else {
 						TailSlot->next = slot;
-						slot->pred = TailSlot;
+					
 						TailSlot = slot;
 					}
 					++CountSlot;
@@ -425,7 +413,7 @@ public:
 		}
 	}
 	// Поиск по цвету (в временной структуре поиска)
-	void searchColor(int n)
+	void SearchColor(int n)
 	{
 		if (CountSlot != 0)
 		{
@@ -445,14 +433,14 @@ public:
 					cout << slot->id << "\t" << slot->marka << "\t" << slot->model << "\t" << slot->status << "\t" << slot->color << "\t"  << endl;
 					temp = temp->next;
 					slot->next = 0;
-					slot->pred = 0;
+					
 					if (CountSlot == 0)
 					{
 						HeadSlot = TailSlot = slot;
 					}
 					else {
 						TailSlot->next = slot;
-						slot->pred = TailSlot;
+						
 						TailSlot = slot;
 					}
 					++CountSlot;
@@ -547,6 +535,11 @@ public:
 		return 0;
 	}
 
+	~Avto()
+	{
+		delete Head, Tail, HeadSlot, TailSlot;
+	}
+
 	friend class Client;
 private:
 	avt *Head, *Tail;
@@ -564,7 +557,7 @@ public:
 		CountClient = 0;
 	}
 
-	int createClient()
+	int СreateClient()
 	{
 		ifstream clientIn("e:\\client.txt");
 		if (CountClient > 0)return 0;
@@ -575,8 +568,8 @@ public:
 				if (client->name != "")
 				{
 					CountClient++;
-					client->next = 0; client->pred = 0;
-					if (TailClient){ TailClient->next = client; client->pred = TailClient;}
+					client->next = 0;
+					if (TailClient){ TailClient->next = client;}
 					if (!HeadClient)HeadClient = client;
 
 					TailClient = client;
@@ -600,11 +593,11 @@ public:
 				temp = temp->next;
 			}
 		}
-		else cout << "База клиентов пуста";
+		else cout << "База клиентов пуста" << endl;
 	}
 
 
-	void searchClientId()
+	void SearchClientId()
 	{
 		if (CountClient != 0)
 		{
@@ -630,7 +623,7 @@ public:
 	}
 
 
-	void By()
+	void ByAvto()
 	{
 
 		int v =  Count;
@@ -660,7 +653,6 @@ public:
 			client->marka = Del->marka;
 			client->model = Del->model;
 			client->status = Del->status;
-			client->pred = TailClient;
 			if (TailClient != 0)TailClient->next = client;
 			if (CountClient == 0)HeadClient = TailClient = client;
 			 TailClient = client; CountClient++; 
@@ -701,6 +693,10 @@ public:
 			clientOut.close();
 		}		
 	}
+	~Client()
+	{
+		delete HeadClient, TailClient;
+	}
 private:
 	Klient *HeadClient,*TailClient;
 	int CountClient;
@@ -729,8 +725,8 @@ int main()
 
 	while (true)
 	{
-		stbase = prog.createAvto();
-		clientbase = prog.createClient();
+		stbase = prog.CreateAvto();
+		clientbase = prog.СreateClient();
 
 
 		switch (stbase)
@@ -764,23 +760,23 @@ int main()
 		{
 		case 1:
 			system("cls");
-			prog.searchId();
+			prog.SearchId();
 			break;
 		case 2:
 			system("cls");
-			prog.searchMarka();
+			prog.SearchMarka();
 			break;
 		case 3:
 			system("cls");
-			prog.searchStatus();
+			prog.SearchStatus();
 			break;
 		case 4:
 			system("cls");
-			prog.searchColor();
+			prog.SearchColor();
 			break;
 		case 5:
 			system("cls");
-			prog.searchModel();
+			prog.SearchModel();
 			break;
 		case 6:
 			system("cls");
@@ -795,19 +791,19 @@ int main()
 
 			case 1:
 				system("cls");
-				prog.searchMarka(1);
+				prog.SearchMarka(1);
 				break;
 			case 2:
 				system("cls");
-				prog.searchStatus(1);
+				prog.SearchStatus(1);
 				break;
 			case 3:
 				system("cls");
-				prog.searchColor(1);
+				prog.SearchColor(1);
 				break;
 			case 4:
 				system("cls");
-				prog.searchModel();
+				prog.SearchModel();
 				break;
 			default:
 				break;
@@ -823,7 +819,7 @@ int main()
 			break;
 		case 10:
 			system("cls");
-			prog.By();
+			prog.ByAvto();
 			break;
 		case 11:
 			system("cls");
@@ -831,7 +827,7 @@ int main()
 			break;
 		case 12:
 			system("cls");
-			prog.searchClientId();
+			prog.SearchClientId();
 			break;
 		case 0:
 			system("cls");
@@ -850,7 +846,7 @@ int main()
 
 void Go()
 {
-	cout << "\t\tБАЗА ДАННЫХ ПО АВТО" << endl
+	cout << "\t\tБАЗА ДАННЫХ АВТО" << endl
 		<< "1\t Поиск по ID" << endl
 		<< "2\t Поиск по марке" << endl
 		<< "3\t Поиск по статусу" << endl
@@ -869,7 +865,7 @@ void Go()
 }
 void GoAgane()
 {
-	cout << "\t\tБАЗА ДАННЫХ ПО АВТО" << endl
+	cout << "\t\tБАЗА ДАННЫХ АВТО" << endl
 		<< "1\t Поиск по марке" << endl
 		<< "2\t Поиск по статусу" << endl
 		<< "3\t Поиск по цвету" << endl
@@ -877,7 +873,7 @@ void GoAgane()
 }
 void Go1()
 {
-	cout << "\t\tБАЗА ДАННЫХ ПО АВТО" << endl
+	cout << "\t\tБАЗА ДАННЫХ АВТО" << endl
 		<< "6\t Добавить новое авто" << endl
 		<< "0\t ВЫХОД" << endl;
 
